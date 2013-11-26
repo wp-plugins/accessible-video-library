@@ -606,7 +606,7 @@ function avl_video( $id, $height=false, $width=false ) {
 	$transcript = apply_filters( 'avl_transcript_link', $transcript, $id, get_post_field( 'post_title', $id ) );
 	// player selector in settings
 	// to test YouTube, need to not have any video attached (WP auto uses first attached vid]
-	if ( $height && $width ) { $params .= " height='$height' width='$width'"; } echo $params; 
+	if ( $height && $width ) { $params .= " height='$height' width='$width'"; }
 	$html = do_shortcode("[video $params poster='$image']").$transcript;
 	if ( !$html && $youtube ) {
 		// this won't return any results when there's only YouTube and we're not on the AVL media page, so need to generate them.
