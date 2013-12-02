@@ -40,6 +40,12 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Changelog ==
 
+= 1.0.2 =
+
+* Figured out how to force alwaysShowControls to true, so keyboard & touch accessibility is more reliable.
+* Adjusted video control bar to appear below video.
+* Increased default font size on captions from 12px to 14px.
+
 = 1.0.1 =
 
 * Moved Help into Video submenu
@@ -63,5 +69,5 @@ Because this plug-in has only been around for a short while, and nobody has aske
 
 == Upgrade Notice ==
 
-= 1.0.0 =
-Brand new plug-in!
+= 1.0.2 =
+Improved keyboard and touch accessibility, usability fixes.
