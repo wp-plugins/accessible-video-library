@@ -40,6 +40,12 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Changelog ==
 
+= 1.0.1 =
+
+* Moved Help into Video submenu
+* Added shortcode note into post meta box.
+* Added ID column to Video posts screen.
+
 = 1.0.0 =
 
 * Initial release.

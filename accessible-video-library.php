@@ -40,12 +40,12 @@ function avl_plugin_deactivated() {
 // Add the administrative settings to the "Settings" menu.
 function avl_add_support_page() {
     if ( function_exists( 'add_submenu_page' ) ) {
-		 $plugin_page = add_options_page( __('Accessible Video Library','accessible-video-library'), __('Accessible Video Library','accessible-video-library'), 'manage_options', __FILE__, 'avl_support_page' );
-		 add_action( 'admin_head-'. $plugin_page, 'avl_styles' );
+		$submenu_page = add_submenu_page( 'edit.php?post_type=avl-video', __('Accessible Video Library > Help','accessible-video-library'), 'Video Help', 'edit_posts', 'avl-help', 'avl_support_page' );
+		add_action( 'admin_head-'. $submenu_page, 'avl_styles' );
     }
 }
 function avl_styles() {
-	if ( $_GET['page'] == "accessible-video-library/accessible-video-library.php" ) {
+	if ( $_GET['page'] == "avl-help" ) {
 		echo '<link type="text/css" rel="stylesheet" href="'.plugins_url('avl-styles.css', __FILE__ ).'" />';
 	}
 }
@@ -210,7 +210,7 @@ $plugins_string
 		$request = '';
 	}
 	echo "
-	<form method='post' action='".admin_url('options-general.php?page=accessible-video-library/accessible-video-library.php')."'>
+	<form method='post' action='".admin_url('edit.php?post_type-avl-video&page-avl-help')."'>
 		<div><input type='hidden' name='_wpnonce' value='".wp_create_nonce('accessible-video-library-nonce')."' /></div>
 		<div>
 		<p>".
@@ -314,8 +314,7 @@ function avl_add_inner_box() {
 	global $post_id;
 	$format = sprintf(
 		'<input type="hidden" name="%1$s" id="%1$s" value="%2$s" />',
-		'mcm_nonce_name',
-		wp_create_nonce( plugin_basename(__FILE__) )
+		'mcm_nonce_name', wp_create_nonce( plugin_basename( __FILE__ ) )
 	);
 	foreach ( $fields as $key=>$value ) {
 		$label = $value['label'];
@@ -323,7 +322,8 @@ function avl_add_inner_box() {
 		$choices = ( isset($value['choices']) )?$value['choices']:false;
 		$format .= avl_create_field( $key, $label, $input, $post_id, $choices );
 	}
-	echo '<div class="avl_post_fields">'.$format.'</div>';
+	$shortcode = "<div class='avl-shortcode'><label for='shortcode'>Shortcode:</label> <input type='text' id='shortcode' disabled value='[avl_video id=\"$post_id\"]' /></div>";
+	echo '<div class="avl_post_fields">'.$shortcode.$format.'</div>';
 }
 
 function avl_create_options( $choices, $selected ) {
@@ -606,7 +606,7 @@ function avl_video( $id, $height=false, $width=false ) {
 	$transcript = apply_filters( 'avl_transcript_link', $transcript, $id, get_post_field( 'post_title', $id ) );
 	// player selector in settings
 	// to test YouTube, need to not have any video attached (WP auto uses first attached vid]
-	if ( $height && $width ) { $params .= " height='$height' width='$width'"; } echo $params; 
+	if ( $height && $width ) { $params .= " height='$height' width='$width'"; }
 	$html = do_shortcode("[video $params poster='$image']").$transcript;
 	if ( !$html && $youtube ) {
 		// this won't return any results when there's only YouTube and we're not on the AVL media page, so need to generate them.
@@ -678,6 +678,7 @@ function avl_custom_mimes( $mimes=array() ) {
 function avl_column($cols) {
 	$cols['avl_captions'] = __('Captions','accessible-video-library');
 	$cols['avl_transcript'] = __('Transcript','accessible-video-library');
+	$cols['avl_id'] = __('ID','accessible-video-library');
 	return $cols;
 }
 
@@ -698,11 +699,14 @@ function avl_custom_column( $column_name, $id ) {
 			if ( $transcript ) { $notes = "<span class='avl has-transcript'>$yes</span>"; }
 			echo $notes;
 		break;
+		case 'avl_id' :
+			echo $id;
+		break;		
 	}
 }
 
 function avl_return_value($value, $column_name, $id) {
-	if ( $column_name == 'avl_captions' || $column_name == 'avl_transcript' ) {
+	if ( $column_name == 'avl_captions' || $column_name == 'avl_transcript' || $column_name == 'avl_id' ) {
 		$value = $id;
 	}
 	return $value;
@@ -713,10 +717,14 @@ function avl_css() {
 ?>
 <style type="text/css">
 #avl_captions, #avl_transcript { width: 70px; }
+#avl_id { width: 50px; }
 .avl_captions, .avl_transcript { text-align: center; vertical-align: middle; }
 .avl { color: #fff; padding: 2px 4px; border-radius: 3px; width: 3em; display: inline-block; box-shadow: 1px 1px #333; }
 .no-transcript, .no-captions { background: #c00; }
 .has-transcript, .has-captions { background: #070;}
+.avl-shortcode { padding: 4px; background: #fff; margin-bottom: 4px; }
+.avl-shortcode label { font-weight: 700; }
+.avl-shortcode input { border: none; font-size: 1.2em; }
 </style>
 <?php	
 }
