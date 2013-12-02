@@ -5,7 +5,7 @@ Tags: a11y, video, library, manager, captions, subtitles, transcription, i18n, l
 Requires at least: 3.6.0
 Tested up to: 3.7.1
 License: GPLv2 or later
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 
 Generates a library for your video information where you can upload caption files, include transcripts, and upload subtitles for other languages.
 
