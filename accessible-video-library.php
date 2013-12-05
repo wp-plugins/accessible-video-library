@@ -5,13 +5,13 @@ Plugin URI: http://www.joedolson.com/articles/accessible-video-library/
 Description: Accessible video library manager. Write transcripts and upload captions. 
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.0.2
+Version: 1.0.4
 */
 
 /*  Copyright 2013  Joe Dolson (email : joe@joedolson.com) */
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-$avl_version = '1.0.2';
+$avl_version = '1.0.4';
 // Filters
 add_filter( 'post_updated_messages', 'avl_posttypes_messages');
 

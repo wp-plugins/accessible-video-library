@@ -19,15 +19,15 @@ var mediaPopup = '';
 				.on( 'click', '.textfield-field', function(e) {
 					e.preventDefault();
 					var $self = $(this),
-						$inpField = $self.parent('.field-holder').find('input.textfield'),
+						$inpField = $self.parent('.field-holder').find('input.textfield');
 					clear_existing();
-					mediaPopup = wp.media( {
+					mediaPopup = wp.media({
 						multiple: false, // add, reset, false
 						title: 'Choose an Uploaded Document',
 						button: {
 							text: 'Select'
 						}
-					} );
+					});
 
 					mediaPopup.on( 'select', function() {
 						var selection = mediaPopup.state().get('selection'),

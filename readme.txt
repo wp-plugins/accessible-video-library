@@ -5,7 +5,7 @@ Tags: a11y, video, library, manager, captions, subtitles, transcription, i18n, l
 Requires at least: 3.6.0
 Tested up to: 3.7.1
 License: GPLv2 or later
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 
 Generates a library for your video information where you can upload caption files, include transcripts, and upload subtitles for other languages.
 
@@ -40,6 +40,10 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Changelog ==
 
+= 1.0.3 =
+
+* Bug fix: broken uploader.js 
+
 = 1.0.2 =
 
 * Figured out how to force alwaysShowControls to true, so keyboard & touch accessibility is more reliable.
@@ -69,5 +73,5 @@ Because this plug-in has only been around for a short while, and nobody has aske
 
 == Upgrade Notice ==
 
-= 1.0.2 =
-Improved keyboard and touch accessibility, usability fixes.
+= 1.0.3 =
+Fixes broken uploader.
