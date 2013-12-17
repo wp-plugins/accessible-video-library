@@ -3,7 +3,7 @@ Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: a11y, video, library, manager, captions, subtitles, transcription, i18n, l10n
 Requires at least: 3.6.0
-Tested up to: 3.7.1
+Tested up to: 3.8.0
 License: GPLv2 or later
 Stable tag: 1.0.3
 
@@ -11,15 +11,15 @@ Generates a library for your video information where you can upload caption file
 
 == Description ==
 
-Accessible Video Library is intended to solve a problem in WordPress: the ability to manage videos and manage critical associated media including captions, transcripts, and subtitles for each video.
+Accessible Video Library solves a problem in WordPress: the ability to manage videos and manage critical associated media including captions, transcripts, and subtitles for each video.
 
-As of WordPress 3.6, WordPress has incorporated the MediaElements.js library for showing videos. It's a good library, and includes native support for captions and internationalization, is keyboard accessible, and supports YouTube.
+In WordPress 3.6, WordPress incorporated the MediaElements.js library for showing videos. It's a good library, and includes native support for captions and internationalization, is keyboard accessible, and supports YouTube.
 
 However, the WordPress implementation doesn't provide any method to add captions, subtitles, or reference YouTube videos. You can always embed YouTube videos using oEmbed, but these videos don't have much at all in the way of keyboard support. 
 
-Accessible Video Library gives you a custom post type that you can use to manage your video media. You can upload captions in .SRT format, upload subtitles also in .SRT format, use the content of the post to include the video transcript, and you can also reference YouTube videos. 
+Accessible Video Library gives you a custom post type that you can use to manage your video media. You can upload captions in .SRT or .DFXP format, upload subtitles also in .SRT or .DFXP format, use the content of the post to include a video transcript, and can reference YouTube videos. 
 
-Additionally, you can upload multiple formats of your video files to improve the browser compatibility with your videos.
+Additionally, you can upload multiple formats of your video files to improve browser compatibility for your videos.
 
 = Translations =
 
@@ -39,6 +39,11 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 3. Start uploading your videos and captions!
 
 == Changelog ==
+
+= 1.0.4 =
+
+* Added support for DFXP format caption files.
+* Added filters to filter videos to only those without captions or transcripts.
 
 = 1.0.3 =
 
@@ -73,5 +78,5 @@ Because this plug-in has only been around for a short while, and nobody has aske
 
 == Upgrade Notice ==
 
-= 1.0.3 =
-Fixes broken uploader.
+= 1.0.4 =
+Add support for DFXP. Add filters to isolate files missing captions and transcripts.

@@ -23,7 +23,7 @@ add_action( 'admin_menu', 'avl_add_outer_box' );
 register_activation_hook( __FILE__, 'avl_plugin_activated' );
 function avl_plugin_activated() {
 	$avl_fields = array( 
-					'captions'=>array( 'label'=>__('Captions (SRT)','accessible-video-library'),'input'=>'upload', 'format'=>'srt', 'type'=>'caption' ),
+					'captions'=>array( 'label'=>__('Captions (SRT/DFXP)','accessible-video-library'),'input'=>'upload', 'format'=>'srt', 'type'=>'caption' ),
 					//'audio_desc'=>array( 'Audio Description (mp3)','upload', 'audio' ),
 					'mp4'=>array( 'label'=>__('Video (mp4)','accessible-video-library'),'input'=>'upload', 'format'=>'mp4', 'type'=>'video' ),
 					'ogv'=>array( 'label'=>__('Video (ogv)','accessible-video-library'),'input'=>'upload', 'format'=>'ogv', 'type'=>'video' ),
@@ -36,6 +36,21 @@ function avl_plugin_activated() {
 register_deactivation_hook( __FILE__, 'avl_plugin_activated' );
 function avl_plugin_deactivated() {
 	flush_rewrite_rules();
+}
+
+add_action( 'plugins_loaded', 'avl_update_check' );
+
+function avl_update_check() {
+	global $avl_version;
+	if ( version_compare( $avl_version, '1.0.4', '<') ) {
+		$posts = get_posts( array( 'post_type' => 'avl-video' ) );
+		foreach ( $posts as $post ) {
+			if ( get_post_field( 'post_content', $post->ID, 'raw' ) == '' ) {
+				add_post_meta( $post->ID, '_notranscript', 'true' );
+			}
+		}
+	}
+	update_option( 'avl_version', $avl_version );
 }
 
 // Add the administrative settings to the "Settings" menu.
@@ -96,7 +111,7 @@ function your_function_add_formats( $fields ) {
 <pre>
 add_filter( 'avl_add_custom_fields', 'your_function_add_languages' );
 function your_function_add_formats( $fields ) {
-	$fields['de_DE'] = array( 'label'=>'German Subtitles (SRT)', 'input'=>'upload', 'format'=>'srt','type'=>'subtitle' );	
+	$fields['de_DE'] = array( 'label'=>'German Subtitles (SRT/DFXP)', 'input'=>'upload', 'format'=>'srt','type'=>'subtitle' );	
 	return $fields;
 }
 </pre>
@@ -298,10 +313,10 @@ global $avl_types;
 add_filter( 'avl_add_custom_fields', 'avl_add_basic_languages' );
 function avl_add_basic_languages( $fields ) {
 	if ( get_bloginfo('language') != 'en-us' ) {
-		$fields['en-us'] = array( 'label'=>__('US English Subtitles (SRT)','accessible-video-library') , 'input'=>'upload', 'format'=>'srt','type'=>'subtitle' );
+		$fields['en-us'] = array( 'label'=>__('US English Subtitles (SRT/DFXP)','accessible-video-library') , 'input'=>'upload', 'format'=>'srt','type'=>'subtitle' );
 	}
 	if ( get_bloginfo( 'language' ) != 'es-ES' ) {	
-		$fields['es_ES'] = array( 'label'=>__('Spanish Subtitles (SRT)','accessible-video-library') ,'input'=>'upload', 'format'=>'srt','type'=>'subtitle' );	
+		$fields['es_ES'] = array( 'label'=>__('Spanish Subtitles (SRT/DFXP)','accessible-video-library') ,'input'=>'upload', 'format'=>'srt','type'=>'subtitle' );	
 	}
 	return $fields;
 }
@@ -404,6 +419,12 @@ function avl_post_meta( $id ) {
 			}
 			update_post_meta( $id, "_".$key, $value );			
 		}
+	}
+	// for post screen filters
+	if ( get_post_field( 'post_content', $id, 'raw' ) == '' ) {
+		add_post_meta( $id, '_notranscript', 'true' );
+	} else {
+		delete_post_meta( $id, '_notranscript' );
 	}
 }
 
@@ -679,7 +700,7 @@ function avl_custom( $args ) {
 add_filter('upload_mimes','avl_custom_mimes');
 function avl_custom_mimes( $mimes=array() ) {
 	$mimes['srt'] = 'text/plain';
-	//$mimes['dxfp'] = 'text/xml';
+	$mimes['dfxp'] = 'text/xml';
 	//$mimes['sub'] = 'text/plain';
 	return $mimes;
 }
@@ -745,4 +766,77 @@ function avl_add() {
 	add_action( 'admin_head', 'avl_css' );
 	add_filter( "manage_avl-video_posts_columns", 'avl_column' );			
 	add_action( "manage_avl-video_posts_custom_column", 'avl_custom_column', 10, 2 );
+}
+
+/* Column sorting/filtering 
+add_filter( "pre_get_posts", 'orderby_featured_image_title' );
+function orderby_featured_image_title( $query ) {
+	if ( !is_admin() ) {
+		return;
+	}
+
+	$order_by = $query->get( 'orderby' );
+
+	if ( $order_by === $this->column_slug ) {
+		$query->set( 'meta_key', '_thumbnail_id' );
+		$query->set( 'orderby', 'meta_value_num' );
+	}
+}
+*/
+
+add_filter( "pre_get_posts", 'filter_avl_videos' );
+function filter_avl_videos( $query ) {
+	global $pagenow;
+	if ( !is_admin() ) { return; }
+
+	$qv = & $query->query_vars;
+	
+	if ( $pagenow == 'edit.php' && !empty( $qv['post_type'] ) && $qv['post_type'] == 'avl-video' ) {
+		if ( empty( $_GET['avl_filter'] ) ) { return; }
+
+		if ( $_GET['avl_filter'] == 'transcripts' ) {
+			$query->set(
+				  'meta_query',
+				  array(
+					   array(
+						   'key'     => '_notranscript',
+						   'value'   => 'true',
+						   'compare' => '='
+					   )
+				  )
+			);		
+		} else if ( $_GET['avl_filter'] == 'captions' ) {
+			$query->set(
+				  'meta_query',
+				  array(
+					   array(
+						   'key'     => '_captions',
+						   'value'   => '',
+						   'compare' => '='
+					   )
+				  )
+			);
+		}
+	}
+}
+
+add_action( "restrict_manage_posts", 'filter_avl_dropdown' );
+function filter_avl_dropdown() {
+	global $wp_query, $typenow;
+	if ( $typenow == 'avl-video' ) {
+		$post_type = get_post_type_object( $typenow );
+		if ( isset( $_GET['avl_filter'] ) ) {
+			$captions = ( $_GET['avl_filter'] == 'captions' ) ? ' selected="selected"' : '';
+			$transcripts = ( $_GET['avl_filter'] == 'transcripts' ) ? ' selected="selected"' : '';
+		} else {
+			$captions = $transcripts = '';
+		}
+		?>
+		<select class="postform" id="avl_filter" name="avl_filter">
+			<option value="all"><?php _e( 'All videos', 'accessible-video-library' ); ?></option>		
+			<option value="captions"<?php echo $captions; ?>><?php _e( 'Videos missing Captions', 'accessible-video-library' ); ?></option>
+			<option value="transcripts"<?php echo $transcripts; ?>><?php _e( 'Videos missing Transcripts', 'accessible-video-library' ); ?></option>
+		</select>
+	<?php
+	}
 }
