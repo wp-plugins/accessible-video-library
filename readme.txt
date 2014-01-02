@@ -40,6 +40,12 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Changelog ==
 
+= 1.0.5 =
+
+* [CSS] Fix text issue if placed immediately next to shortcode.
+* Bug fix: extra space in video parameters broke non-attached videos.
+
+
 = 1.0.4 =
 
 * Added support for DFXP format caption files.

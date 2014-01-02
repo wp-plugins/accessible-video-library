@@ -613,7 +613,7 @@ function avl_video( $id, $height=false, $width=false ) {
 	foreach ( $fields as $k => $field ) { // need to id videos
 		if ( $field['type'] == 'video' && $k != 'external' ) {
 			${$field['format']} = avl_get_custom_field( '_'.$field['format'],$id );
-			if ( ${$field['format']} ) { $params .= $field['format'].'="'.${$field['format']}.' "'; $has_video = true; }
+			if ( ${$field['format']} ) { $params .= $field['format'].'="'.${$field['format']}.'" '; $has_video = true; }
 		}
 	}
 	if ( has_post_thumbnail( $id ) ) {
