@@ -638,7 +638,7 @@ function avl_video( $id, $height=false, $width=false ) {
 	// player selector in settings
 	// to test YouTube, need to not have any video attached (WP auto uses first attached vid]
 	if ( $height && $width ) { $params .= " height='$height' width='$width'"; }
-	$html = do_shortcode("[video $params poster='$image']").$transcript;
+	$html = do_shortcode("[video $params poster='$image']");
 	if ( !$html && $youtube ) {
 		// this won't return any results when there's only YouTube and we're not on the AVL media page, so need to generate them.
 		$library = apply_filters( 'wp_video_shortcode_library', 'mediaelement' );
@@ -657,7 +657,7 @@ function avl_video( $id, $height=false, $width=false ) {
 					</div>';
 		}
 	}
-	$html = apply_filters( 'avl_implementation', $html, $id, $captions, $yt_url );
+	$html = apply_filters( 'avl_implementation', $html, $id, $captions, $yt_url ).$transcript;
 	return $html;
 }
 

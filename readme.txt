@@ -43,7 +43,9 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 = 1.0.5 =
 
 * [CSS] Fix text issue if placed immediately next to shortcode.
+* [CSS] Added styling to caption selector controls to increase accessibility of hover state.
 * Bug fix: extra space in video parameters broke non-attached videos.
+* Bug fix: video disappeared for transcripted YouTube-only videos.
 
 
 = 1.0.4 =
