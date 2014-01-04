@@ -46,7 +46,7 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 * [CSS] Added styling to caption selector controls to increase accessibility of hover state.
 * Bug fix: extra space in video parameters broke non-attached videos.
 * Bug fix: video disappeared for transcripted YouTube-only videos.
-
+* Thanks to <a href="http://www.coolfields.co.uk/">Graham Armfield</a> for patient testing!
 
 = 1.0.4 =
 
@@ -75,9 +75,9 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Frequently Asked Questions ==
 
-= Hey! Why don't you have any Frequently Asked Questions here! =
+= My transcript links go to a 404 error. How can I fix that? =
 
-Because this plug-in has only been around for a short while, and nobody has asked any yet. 
+Go to Settings > Permalinks and update your permalinks format -- the issue is that the permalink format for AVL isn't being understood by WordPress, and needs to be registered.
 
 == Screenshots ==
 
