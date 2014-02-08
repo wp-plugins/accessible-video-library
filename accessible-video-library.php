@@ -338,7 +338,7 @@ function avl_add_inner_box() {
 		$choices = ( isset($value['choices']) )?$value['choices']:false;
 		$format .= avl_create_field( $key, $label, $input, $post_id, $choices );
 	}
-	$shortcode = "<div class='avl-shortcode'><label for='shortcode'>Shortcode:</label> <input type='text' id='shortcode' disabled value='[avl_video id=\"$post_id\"]' /></div>";
+	$shortcode = "<div class='avl-shortcode'><label for='shortcode'>".__('Shortcode','avl-video').":</label> <input type='text' id='shortcode' disabled value='[avl_video id=\"$post_id\"]' /></div>";
 	echo '<div class="avl_post_fields">'.$shortcode.$format.'</div>';
 }
 
@@ -460,9 +460,9 @@ function avl_posttypes() {
 		foreach ( $enabled as $key ) {
 			$value =& $types[$key];		
 			$labels = array(
-				'name' => _x($value[3], 'post type general name'),
-				'singular_name' => _x($value[2], 'post type singular name'),
-				'add_new' => _x( 'Add New' , $key ),
+				'name' => $value[3],
+				'singular_name' => $value[2],
+				'add_new' => __( 'Add New' , 'avl-video' ),
 				'add_new_item' => sprintf( __( 'Create New %s','accessible-video-library' ), $value[2] ),
 				'edit_item' => sprintf( __( 'Modify %s','accessible-video-library' ), $value[2] ),
 				'new_item' => sprintf( __( 'New %s','accessible-video-library' ), $value[2] ),
@@ -485,7 +485,6 @@ function avl_posttypes() {
 				'query_var' => true,
 				'rewrite' => array( 'with_front'=>false, 'slug'=>'avl-video' ),
 				'hierarchical' => false,
-				'menu_position' => 20,
 				'supports' => $raw['supports']
 			); 
 			register_post_type($key,$args);
@@ -514,18 +513,18 @@ function avl_posttypes_messages( $messages ) {
 			$value = $types[$key];
 			$messages[$key] = array(
 				0 => '', // Unused. Messages start at index 1.
-				1 => sprintf( __('%1$s Listing updated. <a href="%2$s">View %1$s listing</a>'), $value[2], esc_url( get_permalink($post_ID) ) ),
+				1 => sprintf( __( '%1$s updated. <a href="%2$s">View %1$s</a>' ), $value[2], esc_url( get_permalink($post_ID) ) ),
 				2 => __('Custom field updated.'),
 				3 => __('Custom field deleted.'),
-				4 => sprintf( __('%s listing updated.'), $value[2] ),
+				4 => sprintf( __('%s updated.'), $value[2] ),
 				/* translators: %s: date and time of the revision */
 				5 => isset($_GET['revision']) ? sprintf( __('%1$s restored to revision from %2$ss'), $value[2], wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-				6 => sprintf( __('%1$s published. <a href="%2$s">View %3$s listing</a>'), $value[2], esc_url( get_permalink($post_ID) ), $value[0] ),
-				7 => sprintf( __('Product listing saved.'), $value[2] ),
-				8 => sprintf( __('%1$s listing submitted. <a target="_blank" href="%2$s">Preview %3$s listing</a>'), $value[2], esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ), $value[0] ),
-				9 => sprintf( __('%1$s listing scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview %3$s item</a>'),
+				6 => sprintf( __('%1$s published. <a href="%2$s">View %3$s</a>'), $value[2], esc_url( get_permalink($post_ID) ), $value[0] ),
+				7 => sprintf( __( '%s saved.' ), $value[2] ),
+				8 => sprintf( __('%1$s submitted. <a target="_blank" href="%2$s">Preview %3$s</a>'), $value[2], esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ), $value[0] ),
+				9 => sprintf( __('%1$s scheduled for: <strong>%2$s</strong>. <a target="_blank" href="%3$s">Preview %4$s item</a>'),
 				  $value[2], date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ), esc_url( get_permalink($post_ID) ), $value[0] ),
-				10 => sprintf( __('%1$s draft updated. <a target="_blank" href="%s">Preview %3$s listing</a>'), $value[2], esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ), $value[0] ),
+				10 => sprintf( __('%1$s draft updated. <a target="_blank" href="%2$s">Preview %3$s</a>'), $value[2], esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ), $value[0] ),
 			);
 		}
 	}

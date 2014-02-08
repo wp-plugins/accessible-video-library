@@ -3,7 +3,7 @@ Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: a11y, video, library, manager, captions, subtitles, transcription, i18n, l10n
 Requires at least: 3.6.0
-Tested up to: 3.8.0
+Tested up to: 3.8.1
 License: GPLv2 or later
 Stable tag: 1.0.5
 
@@ -39,6 +39,11 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 3. Start uploading your videos and captions!
 
 == Changelog ==
+
+= 1.0.6 =
+
+* Bug fix: Various textdomain issues.
+* Bug fix: Menu position potential collision.
 
 = 1.0.5 =
 
