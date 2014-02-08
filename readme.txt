@@ -5,7 +5,7 @@ Tags: a11y, video, library, manager, captions, subtitles, transcription, i18n, l
 Requires at least: 3.6.0
 Tested up to: 3.8.1
 License: GPLv2 or later
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 
 Generates a library for your video information where you can upload caption files, include transcripts, and upload subtitles for other languages.
 
@@ -91,5 +91,5 @@ Go to Settings > Permalinks and update your permalinks format -- the issue is th
 
 == Upgrade Notice ==
 
-= 1.0.4 =
-Add support for DFXP. Add filters to isolate files missing captions and transcripts.
+= 1.0.6 =
+Internationalization ready. Minor bug fix.
