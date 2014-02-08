@@ -15,6 +15,9 @@ $avl_version = '1.0.6';
 // Filters
 add_filter( 'post_updated_messages', 'avl_posttypes_messages');
 
+// Enable internationalisation
+load_plugin_textdomain( 'avl-video',false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
+
 // Actions
 add_action( 'init', 'avl_taxonomies', 0);
 add_action( 'init', 'avl_posttypes' );
