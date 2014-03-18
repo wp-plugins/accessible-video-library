@@ -563,35 +563,52 @@ function avl_get_custom_field($field,$id='') {
 	return $custom_field;
 }
 
-function get_avl_video($atts) {
-	extract(shortcode_atts(array(
+function get_avl_video( $atts ) {
+	extract( shortcode_atts( array(
 				'id' => '',
 				'height' => false,
 				'width' => false
-			), $atts));
+			), $atts ) );
 	return avl_video( $id, $height, $width );
 }
 
-function get_avl_media() {
-	extract(shortcode_atts(array(
+function get_avl_media( $atts ) {
+	extract( shortcode_atts( array(
 				'category' => '',
-				'header' => 'h4'
-			), $atts));
-	return avl_media($category,$header);	
+				'header' => 'h4',
+				'orderby' => 'menu_order',
+				'order' => 'asc'
+			), $atts ) );
+	return avl_media( $category, $header, $orderby, $order );	
 }
 
 // add shortcode interpreter
 add_shortcode('avl_video','get_avl_video');
 add_shortcode('avl_media','get_avl_media');
 
-function avl_media( $category='', $header='h4' ) {
-	$args = array( 'post_type'=>'avl-video' );
+function avl_media( $category, $header='h4', $orderby='menu_order', $order='asc' ) {
+	$args = array( 'post_type'=>'avl-video', 'orderby'=>$orderby, 'order'=>$order );
 	$media = '';
-	if ( $category ) { $args['avl_category_avl-video'] = $category; }
+	if ( $category ) { 
+		$args['tax_query'] = array( 
+			array( 
+				'taxonomy'=>'avl_category_avl-video', 
+				'field'=>'slug', 
+				'terms'=>$category 
+			) 
+		); 
+	} 
 	$args['numberposts'] = -1;
 	$posts = get_posts( $args );
 	foreach ( $posts as $post ) {
-		$media .= "\n<div class='avl-video avl-video-$post->ID'><$header>$post->post_title</$header>\n".avl_video( $post->ID )."\n</div>\n";
+		$permalink = get_permalink( $post->ID );
+		$media .= "\n
+		<div class='avl-video avl-video-$post->ID'>
+			<div class='avl-video-thumbnail'>".get_the_post_thumbnail( $post->ID, 'thumb' )."</div>
+			<$header><a href='$permalink'>$post->post_title</a></$header>
+			<div class='avl-video-description'>$post->post_excerpt</div>
+			\n".avl_video( $post->ID )."\n
+		</div>\n";
 	}
 	return $media;
 }
@@ -626,7 +643,6 @@ function avl_video( $id, $height=false, $width=false ) {
 		$youtube = str_replace( "http://youtu.be/",'',$youtube );
 		$image = "http://img.youtube.com/vi/$youtube/0.jpg"; 
 	}
-	
 	//$audio_desc = avl_get_custom_field( '_audio_desc', $id ); MediaElements.js does not support audio description.
 	$captions = avl_get_custom_field( '_captions', $id );
 	$content = get_post_field( 'post_content',$id );
@@ -641,6 +657,7 @@ function avl_video( $id, $height=false, $width=false ) {
 	// to test YouTube, need to not have any video attached (WP auto uses first attached vid]
 	if ( $height && $width ) { $params .= " height='$height' width='$width'"; }
 	$html = do_shortcode("[video $params poster='$image']");
+
 	if ( !$html && $youtube ) {
 		// this won't return any results when there's only YouTube and we're not on the AVL media page, so need to generate them.
 		$library = apply_filters( 'wp_video_shortcode_library', 'mediaelement' );

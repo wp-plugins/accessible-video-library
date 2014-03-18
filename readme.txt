@@ -40,6 +40,12 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Changelog ==
 
+= 1.0.7 =
+
+* Fixes to avl_media shortcode. 
+* New attributes in avl_media shortcode: orderby and order
+* 
+
 = 1.0.6 =
 
 * Bug fix: Various textdomain issues.
