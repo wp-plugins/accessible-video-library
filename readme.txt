@@ -42,9 +42,9 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 = 1.0.7 =
 
-* Fixes to avl_media shortcode. 
+* Bug fixes: avl_media shortcode. 
+* Bug fix: JS was stripping base URL from inserted URLs, but that breaks if site is not at root.
 * New attributes in avl_media shortcode: orderby and order
-* 
 
 = 1.0.6 =
 

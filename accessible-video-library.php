@@ -5,13 +5,13 @@ Plugin URI: http://www.joedolson.com/articles/accessible-video-library/
 Description: Accessible video library manager. Write transcripts and upload captions. 
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.0.6
+Version: 1.0.7
 */
 
 /*  Copyright 2013  Joe Dolson (email : joe@joedolson.com) */
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-$avl_version = '1.0.6';
+$avl_version = '1.0.7';
 // Filters
 add_filter( 'post_updated_messages', 'avl_posttypes_messages');
 
@@ -577,16 +577,18 @@ function get_avl_media( $atts ) {
 				'category' => '',
 				'header' => 'h4',
 				'orderby' => 'menu_order',
-				'order' => 'asc'
+				'order' => 'asc', 
+				'height' => false, 
+				'width' => false
 			), $atts ) );
-	return avl_media( $category, $header, $orderby, $order );	
+	return avl_media( $category, $header, $orderby, $order, $height, $width );	
 }
 
 // add shortcode interpreter
 add_shortcode('avl_video','get_avl_video');
 add_shortcode('avl_media','get_avl_media');
 
-function avl_media( $category, $header='h4', $orderby='menu_order', $order='asc' ) {
+function avl_media( $category, $header='h4', $orderby='menu_order', $order='asc', $height=false, $width=false ) {
 	$args = array( 'post_type'=>'avl-video', 'orderby'=>$orderby, 'order'=>$order );
 	$media = '';
 	if ( $category ) { 
@@ -600,14 +602,16 @@ function avl_media( $category, $header='h4', $orderby='menu_order', $order='asc'
 	} 
 	$args['numberposts'] = -1;
 	$posts = get_posts( $args );
-	foreach ( $posts as $post ) {
-		$permalink = get_permalink( $post->ID );
+	foreach ( $posts as $p ) {
+		$permalink = get_permalink( $p->ID );
 		$media .= "\n
-		<div class='avl-video avl-video-$post->ID'>
-			<div class='avl-video-thumbnail'>".get_the_post_thumbnail( $post->ID, 'thumb' )."</div>
-			<$header><a href='$permalink'>$post->post_title</a></$header>
-			<div class='avl-video-description'>$post->post_excerpt</div>
-			\n".avl_video( $post->ID )."\n
+		<div class='avl-video avl-video-$p->ID'>
+			<$header><a href='$permalink'>$p->post_title</a></$header>		
+			<div class='avl-video-description'>
+				<div class='avl-video-thumbnail'>".avl_video( $p->ID, 135, 240 )."</div>
+				".wpautop( $p->post_excerpt ) . "
+			</div>
+			\n
 		</div>\n";
 	}
 	return $media;
@@ -655,9 +659,9 @@ function avl_video( $id, $height=false, $width=false ) {
 	$transcript = apply_filters( 'avl_transcript_link', $transcript, $id, get_post_field( 'post_title', $id ) );
 	// player selector in settings
 	// to test YouTube, need to not have any video attached (WP auto uses first attached vid]
-	if ( $height && $width ) { $params .= " height='$height' width='$width'"; }
+	if ( $height && $width ) { $params .= " height='$height' width='$width'"; } else { $params .= " height='360' width='640'"; }
 	$html = do_shortcode("[video $params poster='$image']");
-
+	
 	if ( !$html && $youtube ) {
 		// this won't return any results when there's only YouTube and we're not on the AVL media page, so need to generate them.
 		$library = apply_filters( 'wp_video_shortcode_library', 'mediaelement' );

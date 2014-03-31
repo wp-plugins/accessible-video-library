@@ -41,7 +41,7 @@ var mediaPopup = '';
 							fUrl = selection.first().attributes.url;
 							height 	= 80;
 							width 	= ( ( selection.first().attributes.width )/( selection.first().attributes.height ) )*80;
-							$inpField.val( fUrl.replace( baseUrl, '' ) );
+							$inpField.val( fUrl );
 						}
 					});
 					mediaPopup.open();
