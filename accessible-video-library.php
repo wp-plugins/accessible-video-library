@@ -5,13 +5,13 @@ Plugin URI: http://www.joedolson.com/articles/accessible-video-library/
 Description: Accessible video library manager. Write transcripts and upload captions. 
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.0.7
+Version: 1.1.0
 */
 
-/*  Copyright 2013  Joe Dolson (email : joe@joedolson.com) */
+/*  Copyright 2013-2014  Joe Dolson (email : joe@joedolson.com) */
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-$avl_version = '1.0.7';
+$avl_version = '1.1.0';
 // Filters
 add_filter( 'post_updated_messages', 'avl_posttypes_messages');
 
@@ -71,6 +71,14 @@ function avl_styles() {
 add_action( 'admin_menu', 'avl_add_support_page' );
 
 function avl_support_page() { ?>
+
+<?php 
+if ( isset( $_POST['avl_settings'] ) ) {
+	$responsive = ( isset( $_POST['avl_responsive'] ) ) ? 'true' : 'false';
+	update_option( 'avl_responsive', $responsive );
+	echo "<div class='notice updated'><p>".__( 'Accessible Video Library Settings Updated', 'accessible-video-library' )."</p></div>";
+}
+?>
 <div class="wrap avl-settings" id="accessible-video-library">
 <h2><?php _e('Accessible Video Library','accessible-video-library'); ?></h2>
 	<div id="avl_settings_page" class="postbox-container" style="width: 70%">
@@ -79,9 +87,16 @@ function avl_support_page() { ?>
 				<div class="postbox" id="settings">
 				<h3><?php _e('Help','accessible-video-library'); ?></h3>
 					<div class="inside">
+					<form action='<?php echo admin_url('edit.php?post_type=avl-video&page=avl-help'); ?>' method='post'>
+						<p>
+							<input type='checkbox' name='avl_responsive' id='avl_responsive' value='true'<?php echo ( get_option( 'avl_responsive' ) == 'true' ) ? ' checked="checked"' : ''; ?> /> <label for='avl_responsive'><?php _e( 'Responsive Videos','accessible-video-library' ); ?></label>
+						</p>
+						<p>
+							<input type='submit' name='avl_settings' value='<?php _e( 'Update Settings', 'accessible-video-library' ); ?>' />
+						</p>
+					</form>
 					<p>
 					<?php 
-					_e( 'Accessible Video Library has no settings.','accessible-video-library' ); 
 					_e( 'You can customize some aspects of your videos using filters.','accessible-video-library' ); 
 					_e( 'The use of videos from your video library is largely through shortcodes, documented below.','accessible-video-library' );
 					?>
@@ -212,7 +227,13 @@ $plugins_string
 		$has_read_faq = ( isset( $_POST['has_read_faq'] ) && $_POST['has_read_faq'] == 'on')?"Read FAQ":true; // has no faq, for now.
 		$subject = "Accessible Video Library support request. $has_donated";
 		$message = $request ."\n\n". $data;
-		$from = "From: \"$current_user->display_name\" <$current_user->user_email>\r\n";
+		// Get the site domain and get rid of www. from pluggable.php
+		$sitename = strtolower( $_SERVER['SERVER_NAME'] );
+		if ( substr( $sitename, 0, 4 ) == 'www.' ) {
+				$sitename = substr( $sitename, 4 );
+		}
+		$from_email = 'wordpress@' . $sitename;		
+		$from = "From: \"$current_user->display_name\" <$from_email>\r\nReply-to: \"$current_user->display_name\" <$current_user->user_email>\r\n";
 
 		if ( !$has_read_faq ) {
 			echo "<div class='message error'><p>".__('Please read the FAQ and other Help documents before making a support request.','accessible-video-library')."</p></div>";
@@ -229,7 +250,7 @@ $plugins_string
 		$request = '';
 	}
 	echo "
-	<form method='post' action='".admin_url('edit.php?post_type-avl-video&page-avl-help')."'>
+	<form method='post' action='".admin_url('edit.php?post_type=avl-video&page=avl-help')."'>
 		<div><input type='hidden' name='_wpnonce' value='".wp_create_nonce('accessible-video-library-nonce')."' /></div>
 		<div>
 		<p>".
@@ -290,7 +311,7 @@ function avl_show_support_box() {
 </div>
 <?php
 }
-			
+
 // defaults
 $d_avl_args = array(
 				'public' => true,
@@ -579,7 +600,7 @@ function get_avl_media( $atts ) {
 				'orderby' => 'menu_order',
 				'order' => 'asc', 
 				'height' => false, 
-				'width' => false
+				'width' => false,
 			), $atts ) );
 	return avl_media( $category, $header, $orderby, $order, $height, $width );	
 }
@@ -590,6 +611,7 @@ add_shortcode('avl_media','get_avl_media');
 
 function avl_media( $category, $header='h4', $orderby='menu_order', $order='asc', $height=false, $width=false ) {
 	$args = array( 'post_type'=>'avl-video', 'orderby'=>$orderby, 'order'=>$order );
+	$args['numberposts'] = -1;
 	$media = '';
 	if ( $category ) { 
 		$args['tax_query'] = array( 
@@ -597,10 +619,9 @@ function avl_media( $category, $header='h4', $orderby='menu_order', $order='asc'
 				'taxonomy'=>'avl_category_avl-video', 
 				'field'=>'slug', 
 				'terms'=>$category 
-			) 
+			)
 		); 
 	} 
-	$args['numberposts'] = -1;
 	$posts = get_posts( $args );
 	foreach ( $posts as $p ) {
 		$permalink = get_permalink( $p->ID );
@@ -613,7 +634,7 @@ function avl_media( $category, $header='h4', $orderby='menu_order', $order='asc'
 			</div>
 			\n
 		</div>\n";
-	}
+	}	
 	return $media;
 }
 
@@ -659,19 +680,32 @@ function avl_video( $id, $height=false, $width=false ) {
 	$transcript = apply_filters( 'avl_transcript_link', $transcript, $id, get_post_field( 'post_title', $id ) );
 	// player selector in settings
 	// to test YouTube, need to not have any video attached (WP auto uses first attached vid]
+	if ( get_option( 'avl_responsive' ) == 'true' ) {
+		$height = $width = '100%';
+	} else {
+		$height = $height; $width = $width;
+	}
 	if ( $height && $width ) { $params .= " height='$height' width='$width'"; } else { $params .= " height='360' width='640'"; }
-	$html = do_shortcode("[video $params poster='$image']");
+	if ( get_option( 'avl_responsive' ) == 'true' ) {
+		$html = str_replace( array( 'px;', 'width="100"', 'height="100"' ), array( '%;', 'width="100%"', 'height="100%"' ), do_shortcode("[video $params poster='$image']") );
+	} else {
+		$html = do_shortcode("[video $params poster='$image']");
+	}
 	
 	if ( !$html && $youtube ) {
 		// this won't return any results when there's only YouTube and we're not on the AVL media page, so need to generate them.
 		$library = apply_filters( 'wp_video_shortcode_library', 'mediaelement' );
 		if ( 'mediaelement' === $library && did_action( 'init' ) ) {
-			$content_width = ( !$content_width ) ? apply_filters( 'avl_default_width', 625 ) : $content_width; 
-			$width = ( $width ) ? $width : $content_width ;
-			$height = ( $height ) ? $height : round( $content_width / apply_filters( 'avl_default_aspect', 1.6 ) ) ;
+			if ( get_option( 'avl_responsive' ) != 'true' ) {
+				$content_width = ( !$content_width ) ? apply_filters( 'avl_default_width', 640 ) : $content_width; 
+				$width = ( $width ) ? $width : $content_width ;
+				$height = ( $height ) ? $height : round( $content_width / apply_filters( 'avl_default_aspect', 1.6 ) ) ;
+				$width = $width . 'px';
+				$height = $height . 'px';
+			}
 			wp_enqueue_style( 'wp-mediaelement' );
 			wp_enqueue_script( 'wp-mediaelement' );
-			$html = '<div style="width: '.$width.'px; max-width: 100%;">';
+			$html = '<div style="width: '.$width.'; max-width: 100%;">';
 			$html .= "<!--[if lt IE 9]><script>document.createElement('video');</script><![endif]-->";
 			$html .= '<video class="wp-video-shortcode" id="video-'.$id.'-1" width="'.$width.'" height="'.$height.'" poster="http://img.youtube.com/vi/'.$youtube.'/0.jpg" preload="metadata" controls="controls">
 						<a href="http://youtu.be/'.$youtube.'">http://youtu.be/'.$youtube.'</a>
@@ -723,7 +757,7 @@ function avl_custom( $args ) {
 add_filter('upload_mimes','avl_custom_mimes');
 function avl_custom_mimes( $mimes=array() ) {
 	$mimes['srt'] = 'text/plain';
-	$mimes['dfxp'] = 'text/xml';
+	$mimes['dfxp'] = 'application/ttaf+xml';
 	//$mimes['sub'] = 'text/plain';
 	return $mimes;
 }
