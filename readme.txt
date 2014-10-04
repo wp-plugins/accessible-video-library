@@ -2,8 +2,8 @@
 Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: a11y, video, library, manager, captions, subtitles, transcription, i18n, l10n
-Requires at least: 3.6.0
-Tested up to: 3.9.1
+Requires at least: 3.7.0
+Tested up to: 4.0
 License: GPLv2 or later
 Stable tag: 1.1.0
 
@@ -24,13 +24,13 @@ Additionally, you can upload multiple formats of your video files to improve bro
 = Translations =
 
 Available languages (in order of completeness):
-None yet!
+German, French
 
 Visit the [Accessible Video Library translations site](http://translate.joedolson.com/projects/accessible-video-library) to check the progress of a translation.
 
 Translating my plug-ins is always appreciated. Visit <a href="http://translate.joedolson.com">my translations site</a> to start getting your language into shape!
 
-<a href="http://www.joedolson.com/articles/translator-credits/">Translator Credits</a>
+<a href="http://www.joedolson.com/translator-credits/">Translator Credits</a>
 
 == Installation ==
 
@@ -39,6 +39,11 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 3. Start uploading your videos and captions!
 
 == Changelog ==
+
+= 1.1.1 =
+
+* Options to configure settings in MEjs arguments for WP 4.0; including http://stackoverflow.com/questions/22424980/mediaelement-js-default-video-captions-to-on
+* Added translations: German, French
 
 = 1.1.0 =
 

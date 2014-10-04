@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Accessible Video Library
-Plugin URI: http://www.joedolson.com/articles/accessible-video-library/
+Plugin URI: http://www.joedolson.com/accessible-video-library/
 Description: Accessible video library manager. Write transcripts and upload captions. 
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
@@ -167,20 +167,12 @@ get_currentuserinfo();
 	$php_version = phpversion();
 
 	// theme data
-	if ( function_exists( 'wp_get_theme' ) ) {
 	$theme = wp_get_theme();
-		$theme_name = $theme->Name;
-		$theme_uri = $theme->ThemeURI;
-		$theme_parent = $theme->Template;
-		$theme_version = $theme->Version;	
-	} else {
-	$theme_path = get_stylesheet_directory().'/style.css';
-	$theme = get_theme_data($theme_path);
-		$theme_name = $theme['Name'];
-		$theme_uri = $theme['ThemeURI'];
-		$theme_parent = $theme['Template'];
-		$theme_version = $theme['Version'];
-	}
+	$theme_name = $theme->Name;
+	$theme_uri = $theme->ThemeURI;
+	$theme_parent = $theme->Template;
+	$theme_version = $theme->Version;	
+
 	// plugin data
 	$plugins = get_plugins();
 	$plugins_string = '';
@@ -256,10 +248,10 @@ $plugins_string
 		<p>".
 		__('Please note: I do keep records of those who have donated, but if your donation came from somebody other than your account at this web site, please note this in your message.','accessible-video-library')
 		."<!--<p>
-		<input type='checkbox' name='has_read_faq' id='has_read_faq' value='on' /> <label for='has_read_faq'>".__('I have read <a href="http://www.joedolson.com/articles/accessible-video-library/">the FAQ for this plug-in</a>.','accessible-video-library')." <span>(required)</span></label>
+		<input type='checkbox' name='has_read_faq' id='has_read_faq' value='on' /> <label for='has_read_faq'>".__('I have read <a href="http://www.joedolson.com/accessible-video-library/">the FAQ for this plug-in</a>.','accessible-video-library')." <span>(required)</span></label>
 		</p>-->
 		<p>
-		<input type='checkbox' name='has_donated' id='has_donated' value='on' /> <label for='has_donated'>".__('I have <a href="http://www.joedolson.com/donate.php">made a donation to help support this plug-in</a>.','accessible-video-library')."</label>
+		<input type='checkbox' name='has_donated' id='has_donated' value='on' /> <label for='has_donated'>".__('I have <a href="http://www.joedolson.com/donate/">made a donation to help support this plug-in</a>.','accessible-video-library')."</label>
 		</p>
 		<p>
 		<label for='support_request'>Support Request:</label><br /><textarea name='support_request' required aria-required='true' id='support_request' cols='80' rows='10'>".stripslashes($request)."</textarea>
@@ -370,7 +362,7 @@ function avl_create_options( $choices, $selected ) {
 	$return = '';
 	if (is_array($choices) ) {
 		foreach($choices as $value ) {
-			$v = esc_attr($value);
+			$v = esc_attr( $value);
 			$chosen = ( $v == $selected )?' selected="selected"':'';
 			$return .= "<option value='$value'$chosen>$value</option>";
 		}
@@ -648,6 +640,7 @@ function avl_video( $id, $height=false, $width=false ) {
 	$yt_url = $image = $has_video = false;
 	if ( !is_numeric( $id ) ) { $video = get_page_by_title( $id, OBJECT, 'avl-video' ); $id = $video->ID; }
 	$youtube = avl_get_custom_field( '_external', $id );
+	
 	if ( $youtube && avl_is_url( $youtube ) ) {
 		$yt_url = "$youtube"; 
 	} else if ( $youtube && !avl_is_url( $youtube ) ) {
@@ -687,11 +680,11 @@ function avl_video( $id, $height=false, $width=false ) {
 	}
 	if ( $height && $width ) { $params .= " height='$height' width='$width'"; } else { $params .= " height='360' width='640'"; }
 	if ( get_option( 'avl_responsive' ) == 'true' ) {
-		$html = str_replace( array( 'px;', 'width="100"', 'height="100"' ), array( '%;', 'width="100%"', 'height="100%"' ), do_shortcode("[video $params poster='$image']") );
+		$vid = do_shortcode( "[video $params poster='$image']" );
+		$html = str_replace( array( 'px;', 'width="100"', 'height="100"' ), array( '%;', 'width="100%"', 'height="100%"' ), $vid );
 	} else {
 		$html = do_shortcode("[video $params poster='$image']");
 	}
-	
 	if ( !$html && $youtube ) {
 		// this won't return any results when there's only YouTube and we're not on the AVL media page, so need to generate them.
 		$library = apply_filters( 'wp_video_shortcode_library', 'mediaelement' );
